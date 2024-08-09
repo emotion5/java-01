@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Gradle을 사용하여 프로젝트 빌드
-RUN ./gradlew build
+RUN ./gradlew clean build --no-daemon
 
 # 실행 가능한 JAR 파일 경로
 ARG JAR_FILE=build/libs/*.jar
