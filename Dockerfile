@@ -10,11 +10,18 @@ COPY . .
 # Gradle을 사용하여 프로젝트 빌드
 RUN ./gradlew clean build --no-daemon
 
-# 실행 가능한 JAR 파일 경로
-ARG JAR_FILE=build/libs/*.jar
+## 실행 가능한 JAR 파일 경로
+#ARG JAR_FILE=build/libs/*.jar
+#
+## 컨테이너에서 실행할 JAR 파일 설정
+#COPY ${JAR_FILE} app.jar
+#
+## 애플리케이션을 실행할 명령어
+#ENTRYPOINT ["java","-jar","/app/app.jar"]
 
-# 컨테이너에서 실행할 JAR 파일 설정
-COPY ${JAR_FILE} app.jar
 
-# 애플리케이션을 실행할 명령어
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# JAR 파일을 복사
+COPY build/libs/t1-0.0.1-SNAPSHOT.jar app.jar
+
+# 애플리케이션 실행
+ENTRYPOINT ["java", "-jar", "app.jar"]
