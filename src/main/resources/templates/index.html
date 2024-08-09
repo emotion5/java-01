@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Size</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<h1>Select the size for the cube</h1>
+<form th:action="@{/generate}" method="post">
+    <label for="size">Size:</label>
+    <select id="size" name="size">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+    <button type="submit">Generate</button>
+</form>
+
+<!-- 이곳에 Three.js 렌더링을 위한 캔버스를 추가합니다 -->
+<div id="canvas-container" style="width: 100%; height: 100vh;"></div>
+
+<script>
+    // 사용자가 크기를 선택하여 제출한 후에는 Three.js로 정이십면체를 렌더링합니다.
+    function renderIcosahedron(size) {
+        // 장면(scene), 카메라(camera), 렌더러(renderer) 생성
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // 황금색(StandardMaterial) 정이십면체 생성
+        const geometry = new THREE.IcosahedronGeometry(size);
+        const material = new THREE.MeshStandardMaterial({
+            color: 0xFFD700, // 황금색
+            roughness: 0.1, // 반짝임
+            metalness: 1.0
+        });
+        const icosahedron = new THREE.Mesh(geometry, material);
+        scene.add(icosahedron);
+
+
+        // 첫 번째 SpotLight 추가
+        const spotLight1 = new THREE.SpotLight(0xffffff, 10);
+        spotLight1.position.set(10, 10, 10);
+        spotLight1.angle = Math.PI / 4; // 조명 각도를 45도로 설정
+        spotLight1.penumbra = 0.1; // 부드러운 가장자리 효과
+        spotLight1.decay = 2; // 빛의 감쇠 속도
+        spotLight1.distance = 100; // 빛이 미치는 최대 거리
+        scene.add(spotLight1);
+
+
+
+        // Ambient Light 추가
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+
+        // SpotLight Helper 추가 (필요한 경우 시각적으로 확인 가능)
+        //const spotLightHelper1 = new THREE.SpotLightHelper(spotLight1);
+        //scene.add(spotLightHelper1);
+
+
+
+
+
+
+        // 카메라 위치 설정
+        camera.position.z = size * 5;
+
+        // 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 정이십면체를 회전시킵니다
+            icosahedron.rotation.x += 0.01;
+            icosahedron.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    }
+
+    // form을 제출하면 renderIcosahedron 함수를 호출합니다.
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const size = document.getElementById('size').value;
+        document.getElementById('canvas-container').innerHTML = ''; // 기존 캔버스 제거
+        renderIcosahedron(parseInt(size));
+    });
+</script>
+</body>
+</html>
